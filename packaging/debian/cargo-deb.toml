@@ -1,0 +1,8 @@
+[Package]
+name = "gamedock"
+version = "0.1.0"
+description = "An open-source Android gaming platform for Linux"
+license = "GPL-3.0-only"
+
+[Package.metadata]
+maintainer = "GameDock Contributors <gamedock@example.com>"

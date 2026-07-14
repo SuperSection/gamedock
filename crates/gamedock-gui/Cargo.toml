@@ -1,0 +1,29 @@
+[package]
+name = "gamedock-gui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "egui desktop GUI for GameDock"
+
+[[bin]]
+name = "gamedock-gui"
+path = "src/main.rs"
+
+[dependencies]
+gamedock-core = { workspace = true }
+gamedock-runtime-manager = { workspace = true }
+gamedock-installer = { workspace = true }
+gamedock-game-library = { workspace = true }
+gamedock-launcher = { workspace = true }
+gamedock-linux-integration = { workspace = true }
+gamedock-controller = { workspace = true }
+gamedock-optimizer = { workspace = true }
+gamedock-backup = { workspace = true }
+eframe = { workspace = true }
+egui = { workspace = true }
+egui_extras = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+chrono = { workspace = true }

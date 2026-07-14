@@ -1,0 +1,23 @@
+[package]
+name = "gamedock-backup"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Backup and restore for GameDock apps and data"
+
+[dependencies]
+gamedock-core = { workspace = true }
+gamedock-runtime-manager = { workspace = true }
+gamedock-plugin-sdk = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+chrono = { workspace = true }
+walkdir = { workspace = true }
+zip = "2"
+tempfile = { workspace = true }
+uuid = { workspace = true }

@@ -1,0 +1,18 @@
+[package]
+name = "gamedock-game-library"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Game library management for GameDock"
+
+[dependencies]
+gamedock-core = { workspace = true }
+gamedock-runtime-manager = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+walkdir = { workspace = true }
+reqwest = { workspace = true }
+regex = { workspace = true }

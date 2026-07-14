@@ -1,0 +1,23 @@
+[package]
+name = "gamedock-installer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "APK, XAPK, APKS, and APKM installer for GameDock"
+
+[dependencies]
+gamedock-core = { workspace = true }
+gamedock-plugin-sdk = { workspace = true }
+gamedock-runtime-manager = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+reqwest = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+zip = "2"
+walkdir = { workspace = true }
+tempfile = { workspace = true }

@@ -1,0 +1,24 @@
+Source: gamedock
+Section: games
+Priority: optional
+Maintainer: GameDock Contributors <gamedock@example.com>
+Build-Depends: debhelper-compat (= 13), cargo, rustc
+Standards-Version: 4.6.0
+Homepage: https://github.com/gamedock/gamedock
+
+Package: gamedock
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, waydroid, gamemode, mangohud
+Description: An open-source Android gaming platform for Linux
+ GameDock provides a seamless experience for running Android games on Linux
+ through Waydroid, with features like automatic runtime management, controller
+ support, game library organization, and system optimization.
+ .
+ Features include:
+  * Automatic Waydroid installation and management
+  * One-click APK, XAPK, APKS, APKM installation
+  * Google Play Store integration
+  * Game library with icons, metadata, and search
+  * Controller support for Xbox, DualSense, Switch Pro, and more
+  * GameMode and MangoHUD integration
+  * Desktop launcher integration

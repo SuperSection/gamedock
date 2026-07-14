@@ -1,0 +1,39 @@
+# Maintainer: GameDock Contributors <gamedock@example.com>
+pkgname=gamedock
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="An open-source Android gaming platform for Linux"
+arch=('x86_64')
+url="https://github.com/gamedock/gamedock"
+license=('GPL-3.0-only')
+depends=(
+    'python'
+    'lxc'
+    'nftables'
+    'gtk3'
+    'libxkbcommon'
+    'libinput'
+    'librsvg'
+)
+optdepends=(
+    'waydroid: Android runtime (auto-installed by gamedock-cli init)'
+    'gamemode: Game optimization (auto-enabled by gamedock)'
+    'mangohud: FPS overlay (auto-enabled by gamedock)'
+    'dnsmasq: Android networking'
+)
+makedepends=('cargo' 'rust')
+source=("$url/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "$pkgname-$pkgver"
+    cargo build --release --locked
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    install -Dm755 target/release/gamedock-cli "$pkgdir/usr/bin/gamedock-cli"
+    install -Dm755 target/release/gamedock-gui "$pkgdir/usr/bin/gamedock-gui"
+    install -Dm644 packaging/arch/gamedock.desktop "$pkgdir/usr/share/applications/gamedock.desktop"
+    install -Dm644 packaging/arch/gamedock.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/gamedock.svg"
+}

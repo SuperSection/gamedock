@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=GameDock
+GenericName=Android Gaming Platform
+Comment=Android gaming on Linux, made seamless
+Exec=gamedock-gui %f
+Icon=gamedock
+Terminal=false
+Categories=Game;Utility;
+MimeType=application/vnd.android.package-archive;application/x-xapk;
+Keywords=android;gaming;waydroid;play store;
+StartupNotify=true

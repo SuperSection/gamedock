@@ -1,0 +1,124 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/gamedock-core",
+    "crates/gamedock-plugin-sdk",
+    "crates/gamedock-runtime-manager",
+    "crates/gamedock-installer",
+    "crates/gamedock-game-library",
+    "crates/gamedock-launcher",
+    "crates/gamedock-linux-integration",
+    "crates/gamedock-controller",
+    "crates/gamedock-optimizer",
+    "crates/gamedock-backup",
+    "crates/gamedock-cli",
+    "crates/gamedock-gui",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+authors = ["GameDock Contributors"]
+description = "An open-source Android gaming platform for Linux"
+repository = "https://github.com/gamedock/gamedock"
+readme = "README.md"
+keywords = ["android", "gaming", "linux", "waydroid", "wayland"]
+categories = ["games", "os", "gui"]
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+futures = "0.3"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+serde_yaml = "0.9"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+clap_complete = "4"
+indicatif = "0.17"
+console = "0.15"
+
+# GUI
+eframe = { version = "0.29", features = ["default"] }
+egui = "0.29"
+egui_extras = { version = "0.29", features = ["image"] }
+image = "0.25"
+
+# HTTP
+reqwest = { version = "0.12", features = ["json", "stream"] }
+reqwest-middleware = "0.4"
+tokio-util = "0.7"
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Filesystem
+dirs = "6"
+tempfile = "3"
+walkdir = "2"
+
+# Hashing
+sha2 = "0.10"
+hex = "0.4"
+
+# Regex
+regex = "1"
+
+# Compression
+flate2 = "1"
+
+# Process management
+nix = { version = "0.29", features = ["signal", "process", "fs"] }
+
+# Plugin system
+libloading = "0.8"
+
+# Misc
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4"] }
+url = "2"
+bytes = "1"
+tokio-stream = "0.1"
+which = "7"
+zip = "2"
+
+[workspace.dependencies.gamedock-core]
+path = "crates/gamedock-core"
+
+[workspace.dependencies.gamedock-plugin-sdk]
+path = "crates/gamedock-plugin-sdk"
+
+[workspace.dependencies.gamedock-runtime-manager]
+path = "crates/gamedock-runtime-manager"
+
+[workspace.dependencies.gamedock-installer]
+path = "crates/gamedock-installer"
+
+[workspace.dependencies.gamedock-game-library]
+path = "crates/gamedock-game-library"
+
+[workspace.dependencies.gamedock-launcher]
+path = "crates/gamedock-launcher"
+
+[workspace.dependencies.gamedock-linux-integration]
+path = "crates/gamedock-linux-integration"
+
+[workspace.dependencies.gamedock-controller]
+path = "crates/gamedock-controller"
+
+[workspace.dependencies.gamedock-optimizer]
+path = "crates/gamedock-optimizer"
+
+[workspace.dependencies.gamedock-backup]
+path = "crates/gamedock-backup"

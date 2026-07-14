@@ -1,0 +1,32 @@
+app-id: io.github.gamedock
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: gamedock-gui
+
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=all
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --env=WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+
+modules:
+  - name: gamedock
+    buildsystem: simple
+    build-commands:
+      - cargo build --release
+      - install -Dm755 target/release/gamedock-cli /app/bin/gamedock-cli
+      - install -Dm755 target/release/gamedock-gui /app/bin/gamedock-gui
+      - install -Dm644 packaging/flatpak/io.github.gamedock.desktop /app/share/applications/io.github.gamedock.desktop
+      - install -Dm644 packaging/flatpak/io.github.gamedock.metainfo.xml /app/share/metainfo/io.github.gamedock.metainfo.xml
+    sources:
+      - type: dir
+        path: ../../
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/gamedock/cargo
