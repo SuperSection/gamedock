@@ -64,7 +64,7 @@ jobs:
         with:
           name: gamedock-linux-x86_64
           path: |
-            target/release/gamedock-cli
+            target/release/gamedock
             target/release/gamedock-gui
 
   build-deb:
@@ -78,9 +78,9 @@ jobs:
           name: gamedock-linux-x86_64
           path: build/
       - run: |
-          chmod +x build/gamedock-cli build/gamedock-gui
+          chmod +x build/gamedock build/gamedock-gui
           mkdir -p packaging/deb/gamedock/usr/bin
-          cp build/gamedock-cli packaging/deb/gamedock/usr/bin/
+          cp build/gamedock packaging/deb/gamedock/usr/bin/
           cp build/gamedock-gui packaging/deb/gamedock/usr/bin/
           dpkg-deb --build packaging/deb/gamedock gamedock_0.1.0_amd64.deb
       - uses: actions/upload-artifact@v7

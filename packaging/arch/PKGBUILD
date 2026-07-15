@@ -16,7 +16,7 @@ depends=(
     'librsvg'
 )
 optdepends=(
-    'waydroid: Android runtime (auto-installed by gamedock-cli init)'
+    'waydroid: Android runtime (auto-installed by gamedock init)'
     'gamemode: Game optimization (auto-enabled by gamedock)'
     'mangohud: FPS overlay (auto-enabled by gamedock)'
     'dnsmasq: Android networking'
@@ -32,7 +32,7 @@ build() {
 
 package() {
     cd "$pkgname-$pkgver"
-    install -Dm755 target/release/gamedock-cli "$pkgdir/usr/bin/gamedock-cli"
+    install -Dm755 target/release/gamedock "$pkgdir/usr/bin/gamedock"
     install -Dm755 target/release/gamedock-gui "$pkgdir/usr/bin/gamedock-gui"
     install -Dm644 packaging/arch/gamedock.desktop "$pkgdir/usr/share/applications/gamedock.desktop"
     install -Dm644 packaging/arch/gamedock.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/gamedock.svg"

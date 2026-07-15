@@ -15,7 +15,7 @@ pub struct DesktopEntry {
 impl DesktopEntry {
     pub fn from_app_info(app: &AppInfo, _config: &AppConfig) -> Result<Self> {
         let exec = format!(
-            "gamedock-cli launch --app-id {}",
+            "gamedock launch --app-id {}",
             app.id
         );
 

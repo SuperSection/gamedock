@@ -138,7 +138,7 @@ impl WaydroidRuntime {
             "Could not auto-install Waydroid on your distro.\n\n\
              Please install it manually — visit https://docs.waydro.id and follow\n\
              the instructions for your distro. Once installed, run:\n\n\
-             gamedock-cli init --gapps".into()
+             gamedock init --gapps".into()
         ))
     }
 
@@ -246,7 +246,7 @@ impl WaydroidRuntime {
             match which::which("waydroid") {
                 Ok(p) => p,
                 Err(_) => return Err(Error::Runtime(
-                    "Waydroid is not installed. Run 'gamedock-cli init' to install it.".into()
+                    "Waydroid is not installed. Run 'gamedock init' to install it.".into()
                 )),
             }
         };

@@ -8,9 +8,9 @@ GameDock manages Waydroid (Android on Linux) so you can install and play Android
 
 ```
 yay -Syu gamedock          # 1. Install GameDock (~5MB binary)
-gamedock-cli init --gapps   # 2. Installs Waydroid + downloads Android image (~1GB)
-gamedock-cli play-store     # 3. Opens Play Store, sign in, install games
-gamedock-cli launch <pkg>   # 4. Play
+gamedock init --gapps   # 2. Installs Waydroid + downloads Android image (~1GB)
+gamedock play-store     # 3. Opens Play Store, sign in, install games
+gamedock launch <pkg>   # 4. Play
 ```
 
 **Step 2 is the big one.** First run downloads:
@@ -28,7 +28,7 @@ yay -S gamedock
 # or: paru -S gamedock
 ```
 
-Waydroid and its dependencies are listed as optdepends — GameDock will install them automatically when you run `gamedock-cli init`.
+Waydroid and its dependencies are listed as optdepends — GameDock will install them automatically when you run `gamedock init`.
 
 ### Flatpak (any distro)
 
@@ -46,7 +46,7 @@ dpkg -i gamedock_0.1.0_amd64.deb
 
 ```bash
 cargo build --release
-# Binaries: target/release/gamedock-cli, target/release/gamedock-gui
+# Binaries: target/release/gamedock, target/release/gamedock-gui
 ```
 
 ## First-time setup
@@ -55,10 +55,10 @@ cargo build --release
 
 ```bash
 # With Play Store (recommended — downloads ~1GB Android image)
-gamedock-cli init --gapps
+gamedock init --gapps
 
 # Without Play Store (lighter)
-gamedock-cli init
+gamedock init
 ```
 
 ### GUI
@@ -73,16 +73,16 @@ Shows a setup wizard on first launch. Click "Install with Play Store".
 
 ```bash
 # Open Play Store inside Android
-gamedock-cli play-store
+gamedock play-store
 
 # Or install an APK file
-gamedock-cli install ~/Downloads/game.apk
+gamedock install ~/Downloads/game.apk
 
 # Launch any installed game
-gamedock-cli launch com.supercell.clashofclans
+gamedock launch com.supercell.clashofclans
 
 # Check what's installed
-gamedock-cli list
+gamedock list
 ```
 
 ## Resource usage
@@ -98,8 +98,8 @@ gamedock-cli list
 | Component | Size | When downloaded |
 |-----------|------|-----------------|
 | GameDock binary | ~5MB | At install |
-| Waydroid package | ~5MB | At `gamedock-cli init` |
-| Android system image | ~800MB-1GB | At `gamedock-cli init --gapps` |
+| Waydroid package | ~5MB | At `gamedock init` |
+| Android system image | ~800MB-1GB | At `gamedock init --gapps` |
 | Games | varies | Per game from Play Store |
 
 Total for a typical setup: ~1-2GB + games.
@@ -107,19 +107,19 @@ Total for a typical setup: ~1-2GB + games.
 ## CLI commands
 
 ```bash
-gamedock-cli init [--gapps]     # First-time setup
-gamedock-cli status             # Check runtime status
-gamedock-cli install <file>     # Install APK/XAPK/APKS/APKM
-gamedock-cli launch <pkg>       # Launch a game
-gamedock-cli play-store         # Open Play Store
-gamedock-cli list               # List installed games
-gamedock-cli search <query>     # Search games
-gamedock-cli backup <pkg>       # Backup a game
-gamedock-cli restore <file>     # Restore from backup
-gamedock-cli controller list    # List controllers
-gamedock-cli optimize           # Enable GameMode/MangoHUD
-gamedock-cli system-info        # Show system info
-gamedock-cli completions bash   # Shell completions
+gamedock init [--gapps]     # First-time setup
+gamedock status             # Check runtime status
+gamedock install <file>     # Install APK/XAPK/APKS/APKM
+gamedock launch <pkg>       # Launch a game
+gamedock play-store         # Open Play Store
+gamedock list               # List installed games
+gamedock search <query>     # Search games
+gamedock backup <pkg>       # Backup a game
+gamedock restore <file>     # Restore from backup
+gamedock controller list    # List controllers
+gamedock optimize           # Enable GameMode/MangoHUD
+gamedock system-info        # Show system info
+gamedock completions bash   # Shell completions
 ```
 
 ## Requirements

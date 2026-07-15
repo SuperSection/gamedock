@@ -7,7 +7,7 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 pub struct RuntimeManager {
-    config: AppConfig,
+    _config: AppConfig,
     runtimes: RwLock<HashMap<String, Arc<WaydroidRuntime>>>,
     event_bus: EventBus,
 }
@@ -15,7 +15,7 @@ pub struct RuntimeManager {
 impl RuntimeManager {
     pub fn new(config: AppConfig, event_bus: EventBus) -> Self {
         Self {
-            config,
+            _config: config,
             runtimes: RwLock::new(HashMap::new()),
             event_bus,
         }
