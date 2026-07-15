@@ -1,7 +1,7 @@
 pub mod backup;
-pub mod restore;
 pub mod manager;
+pub mod restore;
 
-pub use manager::BackupManager;
 pub use backup::BackupBuilder;
+pub use manager::BackupManager;
 pub use restore::RestoreManager;

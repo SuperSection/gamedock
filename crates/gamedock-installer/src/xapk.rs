@@ -1,6 +1,6 @@
-use gamedock_core::{PackageInfo, PackageFormat, Result, Error};
-use std::path::{Path, PathBuf};
+use gamedock_core::{Error, PackageFormat, PackageInfo, Result};
 use sha2::{Digest, Sha256};
+use std::path::{Path, PathBuf};
 
 pub struct XapkInstaller;
 
@@ -24,7 +24,8 @@ impl XapkInstaller {
             .map_err(|e| Error::Zip(format!("Invalid XAPK: {}", e)))?;
 
         for i in 0..archive.len() {
-            let entry = archive.by_index(i)
+            let entry = archive
+                .by_index(i)
                 .map_err(|e| Error::Zip(format!("{}", e)))?;
             let name = entry.name().to_string();
             let size = entry.size();
@@ -49,7 +50,8 @@ impl XapkInstaller {
         let temp_dir = tempfile::tempdir()?;
 
         for i in 0..archive.len() {
-            let entry = archive.by_index(i)
+            let entry = archive
+                .by_index(i)
                 .map_err(|e| Error::Zip(format!("{}", e)))?;
             let name = entry.name().to_string();
             let size = entry.size();

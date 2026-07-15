@@ -15,7 +15,12 @@ impl BackupManager {
     pub fn new(config: AppConfig, event_bus: EventBus) -> Self {
         let builder = BackupBuilder::new(config.clone());
         let restorer = RestoreManager::new(config.clone());
-        Self { config, builder, restorer, event_bus }
+        Self {
+            config,
+            builder,
+            restorer,
+            event_bus,
+        }
     }
 
     pub async fn create_backup(
@@ -24,7 +29,10 @@ impl BackupManager {
         runtime_manager: &gamedock_runtime_manager::RuntimeManager,
         include_data: bool,
     ) -> Result<BackupResult> {
-        let result = self.builder.create_backup(app, runtime_manager, include_data).await?;
+        let result = self
+            .builder
+            .create_backup(app, runtime_manager, include_data)
+            .await?;
 
         self.event_bus.publish(Event::BackupCreated {
             backup_id: result.backup_id.clone(),

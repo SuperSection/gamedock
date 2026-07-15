@@ -1,6 +1,6 @@
-use gamedock_core::{AppConfig, Result, Error, AppInfo};
-use gamedock_runtime_manager::RuntimeManager;
+use gamedock_core::{AppConfig, AppInfo, Error, Result};
 use gamedock_game_library::GameLibrary;
+use gamedock_runtime_manager::RuntimeManager;
 use std::sync::Arc;
 
 pub struct PlayStoreLauncher {
@@ -10,11 +10,12 @@ pub struct PlayStoreLauncher {
 }
 
 impl PlayStoreLauncher {
-    pub fn new(
-        config: AppConfig,
-        runtime_manager: Arc<RuntimeManager>,
-    ) -> Self {
-        Self { config, runtime_manager, library: None }
+    pub fn new(config: AppConfig, runtime_manager: Arc<RuntimeManager>) -> Self {
+        Self {
+            config,
+            runtime_manager,
+            library: None,
+        }
     }
 
     pub fn with_library(
@@ -22,20 +23,24 @@ impl PlayStoreLauncher {
         runtime_manager: Arc<RuntimeManager>,
         library: Arc<GameLibrary>,
     ) -> Self {
-        Self { config, runtime_manager, library: Some(library) }
+        Self {
+            config,
+            runtime_manager,
+            library: Some(library),
+        }
     }
 
     pub async fn launch(&self) -> Result<()> {
         if !self.config.play_store.enabled {
             return Err(Error::Runtime(
-                "Google Play Store is disabled in configuration".into()
+                "Google Play Store is disabled in configuration".into(),
             ));
         }
 
         tracing::info!("Launching Google Play Store...");
-        self.runtime_manager.launch_play_store(
-            &self.config.default_runtime,
-        ).await
+        self.runtime_manager
+            .launch_play_store(&self.config.default_runtime)
+            .await
     }
 
     pub async fn launch_app_page(&self, package_name: &str) -> Result<()> {
@@ -45,9 +50,7 @@ impl PlayStoreLauncher {
             package_name
         );
 
-        tokio::process::Command::new("xdg-open")
-            .arg(&url)
-            .spawn()?;
+        tokio::process::Command::new("xdg-open").arg(&url).spawn()?;
 
         Ok(())
     }
@@ -135,7 +138,9 @@ impl PlayStoreLauncher {
         for line in output.lines() {
             let trimmed = line.trim();
             if trimmed.starts_with(&format!("{}=", field)) {
-                return trimmed.split('=').nth(1)
+                return trimmed
+                    .split('=')
+                    .nth(1)
                     .unwrap_or("unknown")
                     .trim()
                     .to_string();

@@ -1,8 +1,8 @@
 use crate::backup::BackupMetadata;
-use gamedock_core::{AppConfig, Result, Error};
+use gamedock_core::{AppConfig, Error, Result};
 use gamedock_plugin_sdk::RuntimePlugin;
-use std::path::{Path, PathBuf};
 use sha2::{Digest, Sha256};
+use std::path::{Path, PathBuf};
 
 pub struct RestoreManager {
     config: AppConfig,
@@ -42,7 +42,8 @@ impl RestoreManager {
             .map_err(|e| Error::Backup(format!("Invalid backup archive: {}", e)))?;
 
         for i in 0..archive.len() {
-            let entry = archive.by_index(i)
+            let entry = archive
+                .by_index(i)
                 .map_err(|e| Error::Zip(format!("{}", e)))?;
             let name = entry.name().to_string();
             let size = entry.size();
@@ -82,34 +83,33 @@ impl RestoreManager {
     ) -> Result<BackupMetadata> {
         let info = self.get_backup_info(path).await?;
 
-        tracing::info!("Restoring backup: {} ({})", info.metadata.app_name, info.metadata.id);
+        tracing::info!(
+            "Restoring backup: {} ({})",
+            info.metadata.app_name,
+            info.metadata.id
+        );
 
         let temp_dir = tempfile::tempdir()?;
         let bytes = std::fs::read(path)?;
         let mut archive = zip::ZipArchive::new(std::io::Cursor::new(&bytes))
             .map_err(|e| Error::Backup(format!("Invalid backup archive: {}", e)))?;
 
-        archive.extract(temp_dir.path())
+        archive
+            .extract(temp_dir.path())
             .map_err(|e| Error::Backup(format!("Failed to extract backup: {}", e)))?;
 
         if info.metadata.includes_apk {
             let apk_path = temp_dir.path().join("base.apk");
             if apk_path.exists() {
-                runtime_manager.install_app(
-                    "waydroid",
-                    &apk_path,
-                ).await?;
+                runtime_manager.install_app("waydroid", &apk_path).await?;
             }
         }
 
         if info.metadata.includes_data {
             let data_dir = temp_dir.path().join("data");
             if data_dir.exists() {
-                self.restore_app_data(
-                    runtime_manager,
-                    &info.metadata.package_name,
-                    &data_dir,
-                ).await?;
+                self.restore_app_data(runtime_manager, &info.metadata.package_name, &data_dir)
+                    .await?;
             }
         }
 
@@ -129,9 +129,9 @@ impl RestoreManager {
             for entry in walkdir::WalkDir::new(data_dir) {
                 let entry = entry.map_err(|e| Error::Backup(format!("{}", e)))?;
                 if entry.file_type().is_file() {
-                    let relative = entry.path().strip_prefix(data_dir)
-                        .unwrap_or(entry.path());
-                    let remote_path = format!("/data/data/{}/{}", package_name, relative.to_string_lossy());
+                    let relative = entry.path().strip_prefix(data_dir).unwrap_or(entry.path());
+                    let remote_path =
+                        format!("/data/data/{}/{}", package_name, relative.to_string_lossy());
                     let _ = runtime.push_file(entry.path(), &remote_path).await;
                 }
             }

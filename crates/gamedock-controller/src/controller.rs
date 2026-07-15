@@ -1,6 +1,6 @@
-use gamedock_core::{AppConfig, Event, EventBus, Result, Error};
 use crate::mapping::InputMapping;
 use crate::profiles::MappingProfile;
+use gamedock_core::{AppConfig, Error, Event, EventBus, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -22,7 +22,9 @@ impl ControllerType {
         match name.to_lowercase().as_str() {
             n if n.contains("xbox") || n.contains("microsoft") => Self::Xbox,
             n if n.contains("dualsense") || n.contains("ps5") => Self::DualSense,
-            n if n.contains("dualshock") || n.contains("ps4") || n.contains("playstation") => Self::DualShock,
+            n if n.contains("dualshock") || n.contains("ps4") || n.contains("playstation") => {
+                Self::DualShock
+            }
             n if n.contains("switch") || n.contains("pro controller") => Self::SwitchPro,
             n if n.contains("8bitdo") || n.contains("8bit") => Self::EightBitDo,
             _ => Self::Generic,
@@ -129,13 +131,18 @@ impl ControllerManager {
 
     pub async fn set_profile(&self, controller_id: &str, profile_name: &str) -> Result<()> {
         let profiles = self.profiles.read().await;
-        let _profile = profiles.get(profile_name)
+        let _profile = profiles
+            .get(profile_name)
             .ok_or_else(|| Error::Controller(format!("Profile '{}' not found", profile_name)))?;
 
         let mut controllers = self.controllers.write().await;
         if let Some(controller) = controllers.get_mut(controller_id) {
             controller.active_profile = Some(profile_name.to_string());
-            tracing::info!("Set profile '{}' for controller '{}'", profile_name, controller.name);
+            tracing::info!(
+                "Set profile '{}' for controller '{}'",
+                profile_name,
+                controller.name
+            );
         }
 
         Ok(())
@@ -217,12 +224,30 @@ mod tests {
 
     #[test]
     fn test_controller_type_from_name() {
-        assert_eq!(ControllerType::from_name("Xbox Wireless Controller"), ControllerType::Xbox);
-        assert_eq!(ControllerType::from_name("Sony DualSense"), ControllerType::DualSense);
-        assert_eq!(ControllerType::from_name("DualShock 4"), ControllerType::DualShock);
-        assert_eq!(ControllerType::from_name("Pro Controller"), ControllerType::SwitchPro);
-        assert_eq!(ControllerType::from_name("8BitDo Pro 2"), ControllerType::EightBitDo);
-        assert_eq!(ControllerType::from_name("Generic Pad"), ControllerType::Generic);
+        assert_eq!(
+            ControllerType::from_name("Xbox Wireless Controller"),
+            ControllerType::Xbox
+        );
+        assert_eq!(
+            ControllerType::from_name("Sony DualSense"),
+            ControllerType::DualSense
+        );
+        assert_eq!(
+            ControllerType::from_name("DualShock 4"),
+            ControllerType::DualShock
+        );
+        assert_eq!(
+            ControllerType::from_name("Pro Controller"),
+            ControllerType::SwitchPro
+        );
+        assert_eq!(
+            ControllerType::from_name("8BitDo Pro 2"),
+            ControllerType::EightBitDo
+        );
+        assert_eq!(
+            ControllerType::from_name("Generic Pad"),
+            ControllerType::Generic
+        );
     }
 
     #[test]
@@ -230,16 +255,28 @@ mod tests {
         assert_eq!(ControllerType::Xbox.display_name(), "Xbox Controller");
         assert_eq!(ControllerType::DualSense.display_name(), "DualSense (PS5)");
         assert_eq!(ControllerType::DualShock.display_name(), "DualShock (PS4)");
-        assert_eq!(ControllerType::SwitchPro.display_name(), "Switch Pro Controller");
-        assert_eq!(ControllerType::EightBitDo.display_name(), "8BitDo Controller");
+        assert_eq!(
+            ControllerType::SwitchPro.display_name(),
+            "Switch Pro Controller"
+        );
+        assert_eq!(
+            ControllerType::EightBitDo.display_name(),
+            "8BitDo Controller"
+        );
         assert_eq!(ControllerType::Generic.display_name(), "Generic Controller");
     }
 
     #[test]
     fn test_controller_type_case_insensitive() {
-        assert_eq!(ControllerType::from_name("xbox controller"), ControllerType::Xbox);
+        assert_eq!(
+            ControllerType::from_name("xbox controller"),
+            ControllerType::Xbox
+        );
         assert_eq!(ControllerType::from_name("XBOX"), ControllerType::Xbox);
-        assert_eq!(ControllerType::from_name("PS5 DualSense"), ControllerType::DualSense);
+        assert_eq!(
+            ControllerType::from_name("PS5 DualSense"),
+            ControllerType::DualSense
+        );
     }
 
     #[test]

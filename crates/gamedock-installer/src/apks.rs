@@ -1,6 +1,6 @@
-use gamedock_core::{PackageInfo, PackageFormat, Result, Error};
-use std::path::Path;
+use gamedock_core::{Error, PackageFormat, PackageInfo, Result};
 use sha2::{Digest, Sha256};
+use std::path::Path;
 
 pub struct ApksInstaller;
 
@@ -25,7 +25,8 @@ impl ApksInstaller {
 
         let mut apks = Vec::new();
         for i in 0..archive.len() {
-            let entry = archive.by_index(i)
+            let entry = archive
+                .by_index(i)
                 .map_err(|e| Error::Zip(format!("{}", e)))?;
             if entry.name().ends_with(".apk") {
                 apks.push(entry.name().to_string());

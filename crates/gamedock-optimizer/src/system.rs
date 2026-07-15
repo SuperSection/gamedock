@@ -118,8 +118,9 @@ impl SystemInfo {
             }
         }
 
-        if let Ok(content) = std::fs::read_to_string("/sys/class/drm/card0/device/driver/module/version")
-            .or_else(|_| std::fs::read_to_string("/sys/module/nvidia/version"))
+        if let Ok(content) =
+            std::fs::read_to_string("/sys/class/drm/card0/device/driver/module/version")
+                .or_else(|_| std::fs::read_to_string("/sys/module/nvidia/version"))
         {
             let version = content.trim();
             if !version.is_empty() {
@@ -141,7 +142,8 @@ impl SystemInfo {
         std::fs::read_to_string("/proc/cpuinfo")
             .ok()
             .and_then(|content| {
-                content.lines()
+                content
+                    .lines()
                     .find(|line| line.starts_with("model name"))
                     .and_then(|line| line.split(':').nth(1))
                     .map(|s| s.trim().to_string())
@@ -159,7 +161,8 @@ impl SystemInfo {
         let total = std::fs::read_to_string("/proc/meminfo")
             .ok()
             .and_then(|content| {
-                content.lines()
+                content
+                    .lines()
                     .find(|line| line.starts_with("MemTotal"))
                     .and_then(|line| line.split_whitespace().nth(1))
                     .and_then(|s| s.parse::<u64>().ok())
@@ -170,7 +173,8 @@ impl SystemInfo {
         let available = std::fs::read_to_string("/proc/meminfo")
             .ok()
             .and_then(|content| {
-                content.lines()
+                content
+                    .lines()
                     .find(|line| line.starts_with("MemAvailable"))
                     .and_then(|line| line.split_whitespace().nth(1))
                     .and_then(|s| s.parse::<u64>().ok())
@@ -192,7 +196,8 @@ impl SystemInfo {
         std::fs::read_to_string("/etc/os-release")
             .ok()
             .and_then(|content| {
-                content.lines()
+                content
+                    .lines()
                     .find(|line| line.starts_with("PRETTY_NAME"))
                     .and_then(|line| line.split('=').nth(1))
                     .map(|s| s.trim_matches('"').to_string())

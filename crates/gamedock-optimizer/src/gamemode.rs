@@ -1,4 +1,4 @@
-use gamedock_core::{Result, Error};
+use gamedock_core::{Error, Result};
 use tokio::process::Command;
 
 pub struct GameModeIntegration;
@@ -40,7 +40,10 @@ impl GameModeIntegration {
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(Error::Optimization(format!("gamemoderun failed: {}", stderr)));
+            return Err(Error::Optimization(format!(
+                "gamemoderun failed: {}",
+                stderr
+            )));
         }
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
@@ -55,10 +58,7 @@ impl GameModeIntegration {
             });
         }
 
-        let output = Command::new("gamemoded")
-            .arg("--status")
-            .output()
-            .await;
+        let output = Command::new("gamemoded").arg("--status").output().await;
 
         match output {
             Ok(out) if out.status.success() => {

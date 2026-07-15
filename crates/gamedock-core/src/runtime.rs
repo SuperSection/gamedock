@@ -85,7 +85,9 @@ mod tests {
         assert_eq!(info.name, "Waydroid");
         assert_eq!(info.status, RuntimeStatus::NotInstalled);
         assert!(info.supported_architectures.contains(&"x86_64".to_string()));
-        assert!(info.supported_architectures.contains(&"arm64-v8a".to_string()));
+        assert!(info
+            .supported_architectures
+            .contains(&"arm64-v8a".to_string()));
     }
 
     #[test]

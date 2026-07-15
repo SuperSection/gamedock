@@ -19,11 +19,7 @@ impl Downloader {
 
         let total_size = response.content_length().unwrap_or(0);
 
-        let filename = url
-            .rsplit('/')
-            .next()
-            .unwrap_or("download")
-            .to_string();
+        let filename = url.rsplit('/').next().unwrap_or("download").to_string();
 
         let download_dir = self.config.cache_dir.join("downloads");
         std::fs::create_dir_all(&download_dir)?;

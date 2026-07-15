@@ -1,11 +1,11 @@
 use async_trait::async_trait;
-use gamedock_core::{AppInfo, RuntimeInfo, RuntimeStatus, Result, Error};
-use gamedock_plugin_sdk::{RuntimePlugin, PluginMetadata};
+use gamedock_core::{AppInfo, Error, Result, RuntimeInfo, RuntimeStatus};
+use gamedock_plugin_sdk::{PluginMetadata, RuntimePlugin};
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::process::Command;
 use tokio::sync::RwLock;
-use std::sync::Arc;
 
 const WAYDROID_IDLE_TIMEOUT_SECS: u64 = 300;
 
@@ -138,7 +138,8 @@ impl WaydroidRuntime {
             "Could not auto-install Waydroid on your distro.\n\n\
              Please install it manually — visit https://docs.waydro.id and follow\n\
              the instructions for your distro. Once installed, run:\n\n\
-             gamedock init --gapps".into()
+             gamedock init --gapps"
+                .into(),
         ))
     }
 
@@ -172,9 +173,9 @@ impl WaydroidRuntime {
             // Fall back to ID itself
             if let Some(ref distro_id) = id {
                 match distro_id.as_str() {
-                    "ubuntu" | "debian" | "linuxmint" | "pop" | "zorin" | "elementary"
-                    | "kali" | "parrot" | "raspbian" | "deepin" | "kaisen" | "vanilla"
-                    | "devuan" | "antix" | " mx" => return Some("debian".to_string()),
+                    "ubuntu" | "debian" | "linuxmint" | "pop" | "zorin" | "elementary" | "kali"
+                    | "parrot" | "raspbian" | "deepin" | "kaisen" | "vanilla" | "devuan"
+                    | "antix" | " mx" => return Some("debian".to_string()),
 
                     "fedora" | "nobara" | "bazzite" | "silverblue" | "kinoite" | "sericea" => {
                         return Some("fedora".to_string());
@@ -245,9 +246,11 @@ impl WaydroidRuntime {
         } else {
             match which::which("waydroid") {
                 Ok(p) => p,
-                Err(_) => return Err(Error::Runtime(
-                    "Waydroid is not installed. Run 'gamedock init' to install it.".into()
-                )),
+                Err(_) => {
+                    return Err(Error::Runtime(
+                        "Waydroid is not installed. Run 'gamedock init' to install it.".into(),
+                    ))
+                }
             }
         };
 
@@ -259,7 +262,10 @@ impl WaydroidRuntime {
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(Error::Runtime(format!("waydroid command failed: {}", stderr)));
+            return Err(Error::Runtime(format!(
+                "waydroid command failed: {}",
+                stderr
+            )));
         }
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
@@ -277,7 +283,10 @@ impl WaydroidRuntime {
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(Error::Runtime(format!("sudo waydroid command failed: {}", stderr)));
+            return Err(Error::Runtime(format!(
+                "sudo waydroid command failed: {}",
+                stderr
+            )));
         }
 
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
@@ -358,7 +367,8 @@ impl RuntimePlugin for WaydroidRuntime {
             } else {
                 return Err(Error::Runtime(
                     "Waydroid installed but binary not found in PATH. \
-                     You may need to log out and back in.".into()
+                     You may need to log out and back in."
+                        .into(),
                 ));
             }
         } else {
@@ -435,17 +445,17 @@ impl RuntimePlugin for WaydroidRuntime {
     async fn install_app(&self, package: &Path) -> Result<String> {
         tracing::info!("Installing app: {:?}", package);
         self.touch_activity().await;
-        let output = self.exec_command(&[
-            "app", "install",
-            &package.to_string_lossy(),
-        ]).await?;
+        let output = self
+            .exec_command(&["app", "install", &package.to_string_lossy()])
+            .await?;
         tracing::info!("App installation output: {}", output);
         Ok(output)
     }
 
     async fn uninstall_app(&self, package_name: &str) -> Result<()> {
         tracing::info!("Uninstalling app: {}", package_name);
-        self.exec_command(&["app", "uninstall", package_name]).await?;
+        self.exec_command(&["app", "uninstall", package_name])
+            .await?;
         Ok(())
     }
 
@@ -474,12 +484,7 @@ impl RuntimePlugin for WaydroidRuntime {
             if !line.is_empty() && !line.starts_with("Package") && !line.starts_with('-') {
                 let parts: Vec<&str> = line.split_whitespace().collect();
                 if let Some(pkg_name) = parts.first() {
-                    let mut app = AppInfo::new(
-                        *pkg_name,
-                        *pkg_name,
-                        "unknown".to_string(),
-                        0,
-                    );
+                    let mut app = AppInfo::new(*pkg_name, *pkg_name, "unknown".to_string(), 0);
                     app.status = gamedock_core::AppStatus::Installed;
                     apps.push(app);
                 }
@@ -504,20 +509,14 @@ impl RuntimePlugin for WaydroidRuntime {
     }
 
     async fn push_file(&self, local: &Path, remote: &str) -> Result<()> {
-        self.exec_command(&[
-            "push",
-            &local.to_string_lossy(),
-            remote,
-        ]).await?;
+        self.exec_command(&["push", &local.to_string_lossy(), remote])
+            .await?;
         Ok(())
     }
 
     async fn pull_file(&self, remote: &str, local: &Path) -> Result<()> {
-        self.exec_command(&[
-            "pull",
-            remote,
-            &local.to_string_lossy(),
-        ]).await?;
+        self.exec_command(&["pull", remote, &local.to_string_lossy()])
+            .await?;
         Ok(())
     }
 

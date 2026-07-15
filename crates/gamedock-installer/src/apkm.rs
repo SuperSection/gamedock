@@ -1,6 +1,6 @@
-use gamedock_core::{PackageInfo, PackageFormat, Result, Error};
-use std::path::Path;
+use gamedock_core::{Error, PackageFormat, PackageInfo, Result};
 use sha2::{Digest, Sha256};
+use std::path::Path;
 
 pub struct ApkmInstaller;
 
@@ -24,7 +24,8 @@ impl ApkmInstaller {
             .map_err(|e| Error::Zip(format!("Invalid APKM: {}", e)))?;
 
         for i in 0..archive.len() {
-            let entry = archive.by_index(i)
+            let entry = archive
+                .by_index(i)
                 .map_err(|e| Error::Zip(format!("{}", e)))?;
             let name = entry.name().to_string();
             let size = entry.size();

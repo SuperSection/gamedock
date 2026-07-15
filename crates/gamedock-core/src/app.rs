@@ -186,7 +186,10 @@ mod tests {
     fn test_category_display() {
         assert_eq!(Category::Action.to_string(), "Action");
         assert_eq!(Category::RolePlaying.to_string(), "Role Playing");
-        assert_eq!(Category::Custom("My Category".into()).to_string(), "My Category");
+        assert_eq!(
+            Category::Custom("My Category".into()).to_string(),
+            "My Category"
+        );
     }
 
     #[test]

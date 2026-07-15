@@ -1,6 +1,6 @@
-use gamedock_core::{AppConfig, AppInfo, Result, Error};
-use gamedock_plugin_sdk::RuntimePlugin;
 use chrono::{DateTime, Utc};
+use gamedock_core::{AppConfig, AppInfo, Error, Result};
+use gamedock_plugin_sdk::RuntimePlugin;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::path::{Path, PathBuf};
@@ -56,7 +56,13 @@ impl BackupBuilder {
         let _data_path = if include_data {
             let data_dir = backup_dir.join("data");
             tokio::fs::create_dir_all(&data_dir).await?;
-            self.backup_app_data(runtime_manager, &app.runtime_id, &app.package_name, &data_dir).await?;
+            self.backup_app_data(
+                runtime_manager,
+                &app.runtime_id,
+                &app.package_name,
+                &data_dir,
+            )
+            .await?;
             Some(data_dir)
         } else {
             None
@@ -138,7 +144,8 @@ impl BackupBuilder {
 
         self.add_dir_to_zip(&mut zip, source_dir, source_dir, &options)?;
 
-        zip.finish().map_err(|e| Error::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
+        zip.finish()
+            .map_err(|e| Error::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
 
         Ok(archive_path)
     }

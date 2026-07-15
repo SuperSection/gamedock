@@ -1,5 +1,5 @@
 use crate::waydroid::WaydroidRuntime;
-use gamedock_core::{AppConfig, AppInfo, Event, EventBus, RuntimeStatus, Result, Error};
+use gamedock_core::{AppConfig, AppInfo, Error, Event, EventBus, Result, RuntimeStatus};
 use gamedock_plugin_sdk::RuntimePlugin;
 use std::collections::HashMap;
 use std::path::Path;
@@ -28,13 +28,18 @@ impl RuntimeManager {
             waydroid.start_idle_watcher().await;
         }
 
-        self.runtimes.write().await.insert("waydroid".to_string(), waydroid);
+        self.runtimes
+            .write()
+            .await
+            .insert("waydroid".to_string(), waydroid);
         tracing::info!("RuntimeManager initialized with Waydroid backend");
         Ok(())
     }
 
     pub async fn get_runtime(&self, name: &str) -> Result<Arc<WaydroidRuntime>> {
-        self.runtimes.read().await
+        self.runtimes
+            .read()
+            .await
             .get(name)
             .cloned()
             .ok_or_else(|| Error::Runtime(format!("Runtime '{}' not found", name)))
@@ -71,7 +76,10 @@ impl RuntimeManager {
                 });
                 Ok(())
             }
-            other => Err(Error::Runtime(format!("Cannot start runtime in state: {}", other))),
+            other => Err(Error::Runtime(format!(
+                "Cannot start runtime in state: {}",
+                other
+            ))),
         }
     }
 

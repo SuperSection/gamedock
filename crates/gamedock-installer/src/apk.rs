@@ -1,6 +1,6 @@
-use gamedock_core::{PackageInfo, PackageFormat, Result, Error};
-use std::path::Path;
+use gamedock_core::{Error, PackageFormat, PackageInfo, Result};
 use sha2::{Digest, Sha256};
+use std::path::Path;
 
 pub struct ApkInstaller;
 

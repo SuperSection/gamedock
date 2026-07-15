@@ -1,7 +1,7 @@
-use gamedock_core::{AppConfig, Event, EventBus, Result, Error};
-use gamedock_runtime_manager::RuntimeManager;
+use gamedock_core::{AppConfig, Error, Event, EventBus, Result};
 use gamedock_game_library::GameLibrary;
 use gamedock_plugin_sdk::RuntimePlugin;
+use gamedock_runtime_manager::RuntimeManager;
 use std::sync::Arc;
 
 pub struct AppLauncher {
@@ -27,12 +27,16 @@ impl AppLauncher {
     }
 
     pub async fn launch(&self, app_id: &str) -> Result<()> {
-        let app = self.library.get_app(app_id).await
+        let app = self
+            .library
+            .get_app(app_id)
+            .await
             .ok_or_else(|| Error::AppNotFound(app_id.to_string()))?;
 
         if !app.is_installed() {
             return Err(Error::Runtime(format!(
-                "App '{}' is not installed", app.name
+                "App '{}' is not installed",
+                app.name
             )));
         }
 
@@ -44,10 +48,9 @@ impl AppLauncher {
             app_id: app_id.to_string(),
         });
 
-        self.runtime_manager.launch_app(
-            &app.runtime_id,
-            &app.package_name,
-        ).await?;
+        self.runtime_manager
+            .launch_app(&app.runtime_id, &app.package_name)
+            .await?;
 
         Ok(())
     }
@@ -86,17 +89,20 @@ impl AppLauncher {
     }
 
     pub async fn get_launch_estimate(&self, app_id: &str) -> Result<LaunchEstimate> {
-        let app = self.library.get_app(app_id).await
+        let app = self
+            .library
+            .get_app(app_id)
+            .await
             .ok_or_else(|| Error::AppNotFound(app_id.to_string()))?;
 
-        let runtime = self.runtime_manager
-            .get_runtime(&app.runtime_id)
-            .await?;
+        let runtime = self.runtime_manager.get_runtime(&app.runtime_id).await?;
 
         let runtime_status = runtime.check_status().await?;
 
-        let needs_startup = matches!(runtime_status, gamedock_core::RuntimeStatus::Installed
-            | gamedock_core::RuntimeStatus::Stopped);
+        let needs_startup = matches!(
+            runtime_status,
+            gamedock_core::RuntimeStatus::Installed | gamedock_core::RuntimeStatus::Stopped
+        );
 
         Ok(LaunchEstimate {
             app_name: app.name.clone(),

@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use gamedock_core::{AppInfo, RuntimeInfo, RuntimeStatus, PackageInfo, Result};
+use gamedock_core::{AppInfo, PackageInfo, Result, RuntimeInfo, RuntimeStatus};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 

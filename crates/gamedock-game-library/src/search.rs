@@ -21,7 +21,10 @@ impl SearchEngine {
                         || re.is_match(&app.description)
                 } else {
                     app.name.to_lowercase().contains(&query.to_lowercase())
-                        || app.package_name.to_lowercase().contains(&query.to_lowercase())
+                        || app
+                            .package_name
+                            .to_lowercase()
+                            .contains(&query.to_lowercase())
                         || app.author.to_lowercase().contains(&query.to_lowercase())
                 }
             })
@@ -44,10 +47,7 @@ impl SearchEngine {
     }
 
     pub fn filter_favorites(apps: &[AppInfo]) -> Vec<AppInfo> {
-        apps.iter()
-            .filter(|app| app.is_favorite)
-            .cloned()
-            .collect()
+        apps.iter().filter(|app| app.is_favorite).cloned().collect()
     }
 
     pub fn sort_by_name(apps: &mut Vec<AppInfo>) {

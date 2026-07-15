@@ -1,8 +1,8 @@
-use gamedock_core::{AppConfig, AppInfo, EventBus, RuntimeStatus};
-use gamedock_runtime_manager::RuntimeManager;
-use gamedock_game_library::GameLibrary;
-use gamedock_controller::ControllerManager;
 use gamedock_backup::BackupManager;
+use gamedock_controller::ControllerManager;
+use gamedock_core::{AppConfig, AppInfo, EventBus, RuntimeStatus};
+use gamedock_game_library::GameLibrary;
+use gamedock_runtime_manager::RuntimeManager;
 use std::sync::Arc;
 
 pub struct AppState {
@@ -117,20 +117,22 @@ impl AppState {
         if let Some(ref library) = self.library {
             let rt = tokio::runtime::Handle::current();
             let lib = library.clone();
-            let apps = tokio::task::block_in_place(|| {
-                rt.block_on(async { lib.list_all_apps().await })
-            });
+            let apps =
+                tokio::task::block_in_place(|| rt.block_on(async { lib.list_all_apps().await }));
             self.apps = apps;
         }
     }
 
     pub fn filtered_apps(&self) -> Vec<&AppInfo> {
-        self.apps.iter().filter(|app| {
-            if self.search_query.is_empty() {
-                return true;
-            }
-            app.matches_search(&self.search_query)
-        }).collect()
+        self.apps
+            .iter()
+            .filter(|app| {
+                if self.search_query.is_empty() {
+                    return true;
+                }
+                app.matches_search(&self.search_query)
+            })
+            .collect()
     }
 
     pub fn set_notification(&mut self, msg: String) {

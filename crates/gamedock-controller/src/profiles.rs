@@ -1,4 +1,4 @@
-use crate::mapping::{InputMapping, Button, Action};
+use crate::mapping::{Action, Button, InputMapping};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,10 +34,18 @@ impl MappingProfile {
         profile.controller_type = "dualsense".to_string();
         profile.is_default = true;
 
-        profile.mapping.map_button(Button::A, Action::Tap(Button::B));
-        profile.mapping.map_button(Button::B, Action::Tap(Button::A));
-        profile.mapping.map_button(Button::X, Action::Tap(Button::Y));
-        profile.mapping.map_button(Button::Y, Action::Tap(Button::X));
+        profile
+            .mapping
+            .map_button(Button::A, Action::Tap(Button::B));
+        profile
+            .mapping
+            .map_button(Button::B, Action::Tap(Button::A));
+        profile
+            .mapping
+            .map_button(Button::X, Action::Tap(Button::Y));
+        profile
+            .mapping
+            .map_button(Button::Y, Action::Tap(Button::X));
 
         profile
     }

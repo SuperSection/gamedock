@@ -1,10 +1,10 @@
 use crate::cli::LaunchArgs;
+use console::style;
 use gamedock_core::AppConfig;
-use gamedock_runtime_manager::RuntimeManager;
 use gamedock_game_library::GameLibrary;
 use gamedock_launcher::AppLauncher;
 use gamedock_launcher::PlayStoreLauncher;
-use console::style;
+use gamedock_runtime_manager::RuntimeManager;
 use std::sync::Arc;
 
 pub async fn launch(args: LaunchArgs) -> anyhow::Result<()> {
@@ -24,15 +24,15 @@ pub async fn launch(args: LaunchArgs) -> anyhow::Result<()> {
         return Ok(());
     }
 
-    let app_id = args.app_id.as_deref()
+    let app_id = args
+        .app_id
+        .as_deref()
         .or_else(|| args.package.as_deref())
         .ok_or_else(|| anyhow::anyhow!("Provide an app ID or package name"))?;
 
-    launcher.launch_with_optimization(
-        app_id,
-        args.gamemode,
-        args.mangohud,
-    ).await?;
+    launcher
+        .launch_with_optimization(app_id, args.gamemode, args.mangohud)
+        .await?;
 
     println!("{}", style("Launched!").green().bold());
     Ok(())

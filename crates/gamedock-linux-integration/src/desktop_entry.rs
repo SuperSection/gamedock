@@ -14,12 +14,11 @@ pub struct DesktopEntry {
 
 impl DesktopEntry {
     pub fn from_app_info(app: &AppInfo, _config: &AppConfig) -> Result<Self> {
-        let exec = format!(
-            "gamedock launch --app-id {}",
-            app.id
-        );
+        let exec = format!("gamedock launch --app-id {}", app.id);
 
-        let categories = app.categories.iter()
+        let categories = app
+            .categories
+            .iter()
             .map(|c| match c {
                 gamedock_core::Category::Action => "Game;ActionGame",
                 gamedock_core::Category::Adventure => "Game;AdventureGame",
@@ -36,7 +35,9 @@ impl DesktopEntry {
             .unwrap_or("Game")
             .to_string();
 
-        let icon = app.icon_path.as_ref()
+        let icon = app
+            .icon_path
+            .as_ref()
             .map(|p| p.to_string_lossy().to_string())
             .unwrap_or_else(|| "gamedock".to_string());
 

@@ -87,10 +87,22 @@ mod tests {
 
     #[test]
     fn test_package_format_from_path() {
-        assert_eq!(PackageFormat::from_path(Path::new("game.apk")), Some(PackageFormat::Apk));
-        assert_eq!(PackageFormat::from_path(Path::new("game.xapk")), Some(PackageFormat::Xapk));
-        assert_eq!(PackageFormat::from_path(Path::new("game.apks")), Some(PackageFormat::Apks));
-        assert_eq!(PackageFormat::from_path(Path::new("game.apkm")), Some(PackageFormat::Apkm));
+        assert_eq!(
+            PackageFormat::from_path(Path::new("game.apk")),
+            Some(PackageFormat::Apk)
+        );
+        assert_eq!(
+            PackageFormat::from_path(Path::new("game.xapk")),
+            Some(PackageFormat::Xapk)
+        );
+        assert_eq!(
+            PackageFormat::from_path(Path::new("game.apks")),
+            Some(PackageFormat::Apks)
+        );
+        assert_eq!(
+            PackageFormat::from_path(Path::new("game.apkm")),
+            Some(PackageFormat::Apkm)
+        );
         assert_eq!(PackageFormat::from_path(Path::new("game.zip")), None);
         assert_eq!(PackageFormat::from_path(Path::new("game.tar.gz")), None);
     }
@@ -113,8 +125,14 @@ mod tests {
 
     #[test]
     fn test_package_format_case_insensitive() {
-        assert_eq!(PackageFormat::from_path(Path::new("GAME.APK")), Some(PackageFormat::Apk));
-        assert_eq!(PackageFormat::from_path(Path::new("game.Xapk")), Some(PackageFormat::Xapk));
+        assert_eq!(
+            PackageFormat::from_path(Path::new("GAME.APK")),
+            Some(PackageFormat::Apk)
+        );
+        assert_eq!(
+            PackageFormat::from_path(Path::new("game.Xapk")),
+            Some(PackageFormat::Xapk)
+        );
     }
 
     #[test]

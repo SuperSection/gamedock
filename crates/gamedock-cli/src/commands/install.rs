@@ -1,8 +1,8 @@
 use crate::cli::{InstallArgs, UninstallArgs};
-use gamedock_core::AppConfig;
-use gamedock_runtime_manager::RuntimeManager;
-use gamedock_installer::PackageInstaller;
 use console::style;
+use gamedock_core::AppConfig;
+use gamedock_installer::PackageInstaller;
+use gamedock_runtime_manager::RuntimeManager;
 
 pub async fn install(args: InstallArgs) -> anyhow::Result<()> {
     let config = AppConfig::load()?;
@@ -14,7 +14,9 @@ pub async fn install(args: InstallArgs) -> anyhow::Result<()> {
     let runtime_id = args.runtime.unwrap_or_else(|| "waydroid".to_string());
 
     if let Some(url) = &args.url {
-        let result = installer.download_and_install(url, &manager, &runtime_id).await?;
+        let result = installer
+            .download_and_install(url, &manager, &runtime_id)
+            .await?;
         println!("{} {}", style("✓").green(), result.name);
     } else {
         let path = &args.path;
@@ -22,7 +24,9 @@ pub async fn install(args: InstallArgs) -> anyhow::Result<()> {
             anyhow::bail!("File not found: {:?}", path);
         }
 
-        let result = installer.install_from_file(path, &manager, &runtime_id).await?;
+        let result = installer
+            .install_from_file(path, &manager, &runtime_id)
+            .await?;
         println!("{} {}", style("✓").green(), result.name);
     }
 
@@ -36,7 +40,9 @@ pub async fn uninstall(args: UninstallArgs) -> anyhow::Result<()> {
     manager.initialize().await?;
 
     let installer = PackageInstaller::new(config, event_bus);
-    installer.uninstall(&args.package_name, &manager, "waydroid").await?;
+    installer
+        .uninstall(&args.package_name, &manager, "waydroid")
+        .await?;
 
     println!("{} {}", style("✓").green(), args.package_name);
     Ok(())

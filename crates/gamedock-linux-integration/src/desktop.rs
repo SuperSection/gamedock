@@ -1,6 +1,6 @@
-use gamedock_core::{AppConfig, AppInfo, Result, Error};
 use crate::desktop_entry::DesktopEntry;
 use crate::icons::IconManager;
+use gamedock_core::{AppConfig, AppInfo, Error, Result};
 use std::path::PathBuf;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -70,7 +70,11 @@ impl DesktopIntegration {
         let env = DesktopEnvironment::detect();
         let icon_manager = IconManager::new(config.clone());
         tracing::info!("Detected desktop environment: {:?}", env);
-        Self { config, env, icon_manager }
+        Self {
+            config,
+            env,
+            icon_manager,
+        }
     }
 
     pub fn create_desktop_entry(&self, app: &AppInfo) -> Result<()> {
@@ -139,7 +143,10 @@ impl DesktopIntegration {
             app_name, command
         );
 
-        let path = autostart_dir.join(format!("gamedock-{}.desktop", app_name.to_lowercase().replace(' ', "-")));
+        let path = autostart_dir.join(format!(
+            "gamedock-{}.desktop",
+            app_name.to_lowercase().replace(' ', "-")
+        ));
         std::fs::write(&path, entry)?;
         Ok(())
     }

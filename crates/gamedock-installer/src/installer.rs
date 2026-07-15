@@ -1,9 +1,11 @@
 use crate::apk::ApkInstaller;
 use crate::apkm::ApkmInstaller;
 use crate::apks::ApksInstaller;
-use crate::xapk::XapkInstaller;
 use crate::download::Downloader;
-use gamedock_core::{AppConfig, AppInfo, Event, EventBus, PackageFormat, PackageInfo, Result, Error};
+use crate::xapk::XapkInstaller;
+use gamedock_core::{
+    AppConfig, AppInfo, Error, Event, EventBus, PackageFormat, PackageInfo, Result,
+};
 use std::path::Path;
 
 pub struct PackageInstaller {
@@ -17,8 +19,9 @@ impl PackageInstaller {
     }
 
     pub fn parse_package(&self, path: &Path) -> Result<PackageInfo> {
-        let format = PackageFormat::from_path(path)
-            .ok_or_else(|| Error::Installation(format!("Unsupported package format: {:?}", path)))?;
+        let format = PackageFormat::from_path(path).ok_or_else(|| {
+            Error::Installation(format!("Unsupported package format: {:?}", path))
+        })?;
 
         match format {
             PackageFormat::Apk => ApkInstaller::parse(path),
@@ -43,7 +46,10 @@ impl PackageInstaller {
         );
 
         self.event_bus.publish(Event::Progress {
-            operation: format!("Installing {}", path.file_name().unwrap_or_default().to_string_lossy()),
+            operation: format!(
+                "Installing {}",
+                path.file_name().unwrap_or_default().to_string_lossy()
+            ),
             current: 0,
             total: package_info.file_size,
         });
@@ -64,7 +70,8 @@ impl PackageInstaller {
                 let mut archive = zip::ZipArchive::new(std::io::Cursor::new(&bytes))
                     .map_err(|e| Error::Zip(format!("Invalid APKS: {}", e)))?;
                 for i in 0..archive.len() {
-                    let entry = archive.by_index(i)
+                    let entry = archive
+                        .by_index(i)
                         .map_err(|e| Error::Zip(format!("{}", e)))?;
                     let name = entry.name().to_string();
                     let size = entry.size();
@@ -82,7 +89,8 @@ impl PackageInstaller {
                 let mut archive = zip::ZipArchive::new(std::io::Cursor::new(&bytes))
                     .map_err(|e| Error::Zip(format!("Invalid APKM: {}", e)))?;
                 for i in 0..archive.len() {
-                    let entry = archive.by_index(i)
+                    let entry = archive
+                        .by_index(i)
                         .map_err(|e| Error::Zip(format!("{}", e)))?;
                     let name = entry.name().to_string();
                     let size = entry.size();
@@ -123,7 +131,8 @@ impl PackageInstaller {
     ) -> Result<AppInfo> {
         let downloader = Downloader::new(self.config.clone(), self.event_bus.clone());
         let path = downloader.download(url).await?;
-        self.install_from_file(&path, runtime_manager, runtime_id).await
+        self.install_from_file(&path, runtime_manager, runtime_id)
+            .await
     }
 
     pub async fn uninstall(
@@ -132,7 +141,9 @@ impl PackageInstaller {
         runtime_manager: &gamedock_runtime_manager::RuntimeManager,
         runtime_id: &str,
     ) -> Result<()> {
-        runtime_manager.uninstall_app(runtime_id, package_name).await?;
+        runtime_manager
+            .uninstall_app(runtime_id, package_name)
+            .await?;
         self.event_bus.publish(Event::AppUninstalled {
             app_id: package_name.to_string(),
         });

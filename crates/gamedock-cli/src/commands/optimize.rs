@@ -1,7 +1,7 @@
 use crate::cli::OptimizeArgs;
+use console::style;
 use gamedock_core::AppConfig;
 use gamedock_optimizer::Optimizer;
-use console::style;
 
 pub async fn optimize(args: OptimizeArgs) -> anyhow::Result<()> {
     let config = AppConfig::load()?;

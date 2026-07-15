@@ -29,7 +29,10 @@ impl PluginRegistry {
             installer: None,
             optimizer: None,
         };
-        self.plugins.write().await.insert(metadata.name.clone(), entry);
+        self.plugins
+            .write()
+            .await
+            .insert(metadata.name.clone(), entry);
         tracing::info!("Registered runtime plugin: {}", metadata.name);
     }
 
@@ -41,7 +44,10 @@ impl PluginRegistry {
             installer: Some(plugin),
             optimizer: None,
         };
-        self.plugins.write().await.insert(metadata.name.clone(), entry);
+        self.plugins
+            .write()
+            .await
+            .insert(metadata.name.clone(), entry);
         tracing::info!("Registered installer plugin: {}", metadata.name);
     }
 
@@ -53,28 +59,57 @@ impl PluginRegistry {
             installer: None,
             optimizer: Some(plugin),
         };
-        self.plugins.write().await.insert(metadata.name.clone(), entry);
+        self.plugins
+            .write()
+            .await
+            .insert(metadata.name.clone(), entry);
         tracing::info!("Registered optimizer plugin: {}", metadata.name);
     }
 
     pub async fn get_runtime(&self, name: &str) -> Option<Arc<dyn crate::traits::RuntimePlugin>> {
-        self.plugins.read().await.get(name).and_then(|e| e.runtime.clone())
+        self.plugins
+            .read()
+            .await
+            .get(name)
+            .and_then(|e| e.runtime.clone())
     }
 
-    pub async fn get_installer(&self, name: &str) -> Option<Arc<dyn crate::traits::InstallerPlugin>> {
-        self.plugins.read().await.get(name).and_then(|e| e.installer.clone())
+    pub async fn get_installer(
+        &self,
+        name: &str,
+    ) -> Option<Arc<dyn crate::traits::InstallerPlugin>> {
+        self.plugins
+            .read()
+            .await
+            .get(name)
+            .and_then(|e| e.installer.clone())
     }
 
-    pub async fn get_optimizer(&self, name: &str) -> Option<Arc<dyn crate::traits::OptimizerPlugin>> {
-        self.plugins.read().await.get(name).and_then(|e| e.optimizer.clone())
+    pub async fn get_optimizer(
+        &self,
+        name: &str,
+    ) -> Option<Arc<dyn crate::traits::OptimizerPlugin>> {
+        self.plugins
+            .read()
+            .await
+            .get(name)
+            .and_then(|e| e.optimizer.clone())
     }
 
     pub async fn list_plugins(&self) -> Vec<PluginMetadata> {
-        self.plugins.read().await.values().map(|e| e.metadata.clone()).collect()
+        self.plugins
+            .read()
+            .await
+            .values()
+            .map(|e| e.metadata.clone())
+            .collect()
     }
 
     pub async fn list_runtimes(&self) -> Vec<PluginMetadata> {
-        self.plugins.read().await.values()
+        self.plugins
+            .read()
+            .await
+            .values()
             .filter(|e| e.runtime.is_some())
             .map(|e| e.metadata.clone())
             .collect()

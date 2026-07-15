@@ -1,7 +1,7 @@
-pub mod traits;
-pub mod registry;
 pub mod loader;
+pub mod registry;
+pub mod traits;
 
-pub use traits::{RuntimePlugin, InstallerPlugin, OptimizerPlugin, PluginMetadata, PluginType};
-pub use registry::PluginRegistry;
 pub use loader::PluginLoader;
+pub use registry::PluginRegistry;
+pub use traits::{InstallerPlugin, OptimizerPlugin, PluginMetadata, PluginType, RuntimePlugin};

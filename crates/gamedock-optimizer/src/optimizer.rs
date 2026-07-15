@@ -1,7 +1,7 @@
 use crate::gamemode::GameModeIntegration;
 use crate::mangohud::MangoHUDIntegration;
 use crate::system::SystemInfo;
-use gamedock_core::{AppConfig, Result, Error};
+use gamedock_core::{AppConfig, Error, Result};
 
 pub struct Optimizer {
     config: AppConfig,
@@ -67,7 +67,9 @@ impl Optimizer {
             }
         }
 
-        Err(Error::Optimization("Cannot set CPU governor: no writable path found".into()))
+        Err(Error::Optimization(
+            "Cannot set CPU governor: no writable path found".into(),
+        ))
     }
 
     pub async fn get_current_governor(&self) -> Result<String> {
@@ -90,7 +92,11 @@ impl Optimizer {
         if let Ok(content) = std::fs::read_to_string(path) {
             Ok(content.split_whitespace().map(String::from).collect())
         } else {
-            Ok(vec!["performance".to_string(), "powersave".to_string(), "schedutil".to_string()])
+            Ok(vec![
+                "performance".to_string(),
+                "powersave".to_string(),
+                "schedutil".to_string(),
+            ])
         }
     }
 

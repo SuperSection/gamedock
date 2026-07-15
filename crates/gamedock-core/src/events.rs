@@ -104,7 +104,10 @@ mod tests {
         let received = rx.try_recv();
         assert!(received.is_ok());
         match received.unwrap() {
-            Event::AppInstalled { app_id, package_name } => {
+            Event::AppInstalled {
+                app_id,
+                package_name,
+            } => {
                 assert_eq!(app_id, "test");
                 assert_eq!(package_name, "com.test");
             }

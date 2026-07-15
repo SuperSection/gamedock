@@ -221,10 +221,22 @@ mod tests {
         config.data_dir = PathBuf::from("/tmp/gamedock-test/data");
         config.cache_dir = PathBuf::from("/tmp/gamedock-test/cache");
 
-        assert_eq!(config.apps_dir(), PathBuf::from("/tmp/gamedock-test/data/apps"));
-        assert_eq!(config.backups_dir(), PathBuf::from("/tmp/gamedock-test/data/backups"));
-        assert_eq!(config.icons_dir(), PathBuf::from("/tmp/gamedock-test/cache/icons"));
-        assert_eq!(config.plugins_dir(), PathBuf::from("/tmp/gamedock-test/data/plugins"));
+        assert_eq!(
+            config.apps_dir(),
+            PathBuf::from("/tmp/gamedock-test/data/apps")
+        );
+        assert_eq!(
+            config.backups_dir(),
+            PathBuf::from("/tmp/gamedock-test/data/backups")
+        );
+        assert_eq!(
+            config.icons_dir(),
+            PathBuf::from("/tmp/gamedock-test/cache/icons")
+        );
+        assert_eq!(
+            config.plugins_dir(),
+            PathBuf::from("/tmp/gamedock-test/data/plugins")
+        );
     }
 
     #[test]

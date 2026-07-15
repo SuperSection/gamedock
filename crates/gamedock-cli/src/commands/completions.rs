@@ -1,6 +1,6 @@
+use crate::cli::{Cli, CompletionsArgs};
 use clap::CommandFactory;
 use clap_complete::generate;
-use crate::cli::{Cli, CompletionsArgs};
 use std::io;
 
 pub fn completions(args: CompletionsArgs) -> anyhow::Result<()> {

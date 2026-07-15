@@ -1,4 +1,4 @@
-use gamedock_core::{AppConfig, AppInfo, Result, Error};
+use gamedock_core::{AppConfig, AppInfo, Error, Result};
 use std::path::PathBuf;
 
 pub struct IconManager {
@@ -18,7 +18,8 @@ impl IconManager {
         let icon_path = icons_dir.join(&icon_filename);
 
         let png_data = if self.is_svg(icon_data) {
-            self.convert_svg_to_png(icon_data, 256).unwrap_or_else(|_| icon_data.to_vec())
+            self.convert_svg_to_png(icon_data, 256)
+                .unwrap_or_else(|_| icon_data.to_vec())
         } else {
             icon_data.to_vec()
         };
@@ -133,10 +134,7 @@ impl IconManager {
             }
         }
 
-        let mut encoder = flate2::write::ZlibEncoder::new(
-            Vec::new(),
-            flate2::Compression::fast(),
-        );
+        let mut encoder = flate2::write::ZlibEncoder::new(Vec::new(), flate2::Compression::fast());
         std::io::Write::write_all(&mut encoder, &raw_data).unwrap();
         let compressed = encoder.finish().unwrap();
 

@@ -1,7 +1,7 @@
 pub mod library;
-pub mod search;
 pub mod metadata;
+pub mod search;
 
 pub use library::GameLibrary;
-pub use search::SearchEngine;
 pub use metadata::MetadataFetcher;
+pub use search::SearchEngine;

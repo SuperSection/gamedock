@@ -51,7 +51,10 @@ impl GameLibrary {
             let content = tokio::fs::read_to_string(&path).await?;
             let data: LibraryData = serde_json::from_str(&content)?;
             *self.data.write().await = data;
-            tracing::info!("Loaded library with {} apps", self.data.read().await.apps.len());
+            tracing::info!(
+                "Loaded library with {} apps",
+                self.data.read().await.apps.len()
+            );
         } else {
             tracing::info!("No existing library found, starting fresh");
         }
@@ -110,7 +113,11 @@ impl GameLibrary {
     }
 
     pub async fn list_installed_apps(&self) -> Vec<AppInfo> {
-        self.data.read().await.apps.values()
+        self.data
+            .read()
+            .await
+            .apps
+            .values()
             .filter(|a| a.status == AppStatus::Installed)
             .cloned()
             .collect()
@@ -134,7 +141,8 @@ impl GameLibrary {
 
     pub async fn get_favorites(&self) -> Vec<AppInfo> {
         let data = self.data.read().await;
-        data.favorites.iter()
+        data.favorites
+            .iter()
             .filter_map(|id| data.apps.get(id).cloned())
             .collect()
     }
@@ -156,7 +164,8 @@ impl GameLibrary {
 
     pub async fn get_recently_played(&self, limit: usize) -> Vec<AppInfo> {
         let data = self.data.read().await;
-        data.recently_played.iter()
+        data.recently_played
+            .iter()
             .take(limit)
             .filter_map(|id| data.apps.get(id).cloned())
             .collect()
@@ -164,7 +173,8 @@ impl GameLibrary {
 
     pub async fn get_by_category(&self, category: &Category) -> Vec<AppInfo> {
         let data = self.data.read().await;
-        data.apps.values()
+        data.apps
+            .values()
             .filter(|a| a.categories.contains(category))
             .cloned()
             .collect()
@@ -195,7 +205,8 @@ impl GameLibrary {
 
     pub async fn search(&self, query: &str) -> Vec<AppInfo> {
         let data = self.data.read().await;
-        data.apps.values()
+        data.apps
+            .values()
             .filter(|a| a.matches_search(query))
             .cloned()
             .collect()

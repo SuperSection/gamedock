@@ -73,7 +73,8 @@ impl MangoHUDIntegration {
     }
 
     async fn write_config(&self, config: &str) -> Result<()> {
-        self.write_config_to(config, &self.config_dir.join("GameDock.conf")).await
+        self.write_config_to(config, &self.config_dir.join("GameDock.conf"))
+            .await
     }
 
     async fn write_config_to(&self, config: &str, path: &PathBuf) -> Result<()> {

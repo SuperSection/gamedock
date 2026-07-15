@@ -1,8 +1,8 @@
 use crate::cli::{InitArgs, StatusArgs};
-use gamedock_core::AppConfig;
-use gamedock_runtime_manager::RuntimeManager;
-use gamedock_plugin_sdk::RuntimePlugin;
 use console::style;
+use gamedock_core::AppConfig;
+use gamedock_plugin_sdk::RuntimePlugin;
+use gamedock_runtime_manager::RuntimeManager;
 
 pub async fn init(args: InitArgs) -> anyhow::Result<()> {
     let config = AppConfig::load()?;
@@ -22,9 +22,15 @@ pub async fn init(args: InitArgs) -> anyhow::Result<()> {
     }
 
     if args.gapps {
-        println!("{}", style("Initializing with Google Play Store support...").cyan());
+        println!(
+            "{}",
+            style("Initializing with Google Play Store support...").cyan()
+        );
     } else {
-        println!("{}", style("Initializing Waydroid (no Play Store)...").cyan());
+        println!(
+            "{}",
+            style("Initializing Waydroid (no Play Store)...").cyan()
+        );
     }
 
     manager.init_with_gapps().await?;
@@ -67,7 +73,9 @@ pub async fn status(_args: StatusArgs) -> anyhow::Result<()> {
     for (name, status) in &statuses {
         let status_str = match status {
             gamedock_core::RuntimeStatus::Running => style("running").green().to_string(),
-            gamedock_core::RuntimeStatus::Installed => style("installed (idle)").yellow().to_string(),
+            gamedock_core::RuntimeStatus::Installed => {
+                style("installed (idle)").yellow().to_string()
+            }
             gamedock_core::RuntimeStatus::NotInstalled => style("not installed").red().to_string(),
             other => format!("{}", other),
         };
@@ -80,7 +88,10 @@ pub async fn status(_args: StatusArgs) -> anyhow::Result<()> {
 
     match runtime.check_status().await? {
         gamedock_core::RuntimeStatus::Running => {
-            let apps = manager.list_installed_apps(&runtime_name).await.unwrap_or_default();
+            let apps = manager
+                .list_installed_apps(&runtime_name)
+                .await
+                .unwrap_or_default();
             println!("  apps: {}", apps.len());
         }
         gamedock_core::RuntimeStatus::Installed => {}

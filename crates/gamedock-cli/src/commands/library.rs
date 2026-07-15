@@ -1,8 +1,8 @@
 use crate::cli::{ListArgs, SearchArgs};
-use gamedock_core::AppConfig;
-use gamedock_game_library::GameLibrary;
-use gamedock_core::EventBus;
 use console::style;
+use gamedock_core::AppConfig;
+use gamedock_core::EventBus;
+use gamedock_game_library::GameLibrary;
 
 pub async fn list(args: ListArgs) -> anyhow::Result<()> {
     let config = AppConfig::load()?;
@@ -26,7 +26,12 @@ pub async fn list(args: ListArgs) -> anyhow::Result<()> {
     if args.json {
         println!("{}", serde_json::to_string_pretty(&apps)?);
     } else {
-        println!("{}", style(format!("Game Library ({} apps)", apps.len())).cyan().bold());
+        println!(
+            "{}",
+            style(format!("Game Library ({} apps)", apps.len()))
+                .cyan()
+                .bold()
+        );
         println!();
         for app in &apps {
             let status = match &app.status {
@@ -60,13 +65,21 @@ pub async fn search(args: SearchArgs) -> anyhow::Result<()> {
     } else {
         println!(
             "{}",
-            style(format!("Search results for '{}' ({} found)", args.query, results.len()))
-                .cyan()
-                .bold()
+            style(format!(
+                "Search results for '{}' ({} found)",
+                args.query,
+                results.len()
+            ))
+            .cyan()
+            .bold()
         );
         println!();
         for app in &results {
-            println!("  {} {}", style(&app.name).bold(), style(&app.package_name).dim());
+            println!(
+                "  {} {}",
+                style(&app.name).bold(),
+                style(&app.package_name).dim()
+            );
         }
     }
 

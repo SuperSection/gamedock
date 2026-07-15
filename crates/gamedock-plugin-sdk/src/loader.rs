@@ -47,7 +47,9 @@ pub struct PluginLoader {
 
 impl PluginLoader {
     pub fn new(config: &AppConfig) -> Self {
-        Self { config: config.clone() }
+        Self {
+            config: config.clone(),
+        }
     }
 
     pub async fn load_plugins(&self, registry: &PluginRegistry) -> Result<()> {
@@ -60,7 +62,8 @@ impl PluginLoader {
         let entries: Vec<_> = std::fs::read_dir(&plugins_dir)?
             .filter_map(|e| e.ok())
             .filter(|e| {
-                e.path().extension()
+                e.path()
+                    .extension()
                     .and_then(|ext| ext.to_str())
                     .map(|ext| ext == "toml")
                     .unwrap_or(false)
@@ -94,28 +97,36 @@ impl PluginLoader {
                     Ok(()) => {
                         tracing::info!(
                             "Loaded native plugin '{}' v{} from {:?}",
-                            metadata.name, metadata.version, path
+                            metadata.name,
+                            metadata.version,
+                            path
                         );
                         return Ok(());
                     }
                     Err(e) => {
                         tracing::warn!(
                             "Failed to load native library for '{}': {}",
-                            metadata.name, e
+                            metadata.name,
+                            e
                         );
                     }
                 }
             } else {
                 tracing::warn!(
                     "Plugin '{}' entry '{}' not found at {:?}",
-                    metadata.name, entry_name, lib_path
+                    metadata.name,
+                    entry_name,
+                    lib_path
                 );
             }
         }
 
         tracing::info!(
             "Registered plugin manifest '{}' v{} (type: {:?}) from {:?}",
-            metadata.name, metadata.version, metadata.plugin_type, path
+            metadata.name,
+            metadata.version,
+            metadata.plugin_type,
+            path
         );
 
         Ok(())
@@ -124,14 +135,16 @@ impl PluginLoader {
     #[allow(improper_ctypes_definitions)]
     pub async fn load_native_plugin(&self, path: &Path, _registry: &PluginRegistry) -> Result<()> {
         if !path.exists() {
-            return Err(gamedock_core::Error::Plugin(
-                format!("Plugin not found: {:?}", path)
-            ));
+            return Err(gamedock_core::Error::Plugin(format!(
+                "Plugin not found: {:?}",
+                path
+            )));
         }
 
         unsafe {
-            let lib = libloading::Library::new(path)
-                .map_err(|e| gamedock_core::Error::Plugin(format!("Failed to load library: {}", e)))?;
+            let lib = libloading::Library::new(path).map_err(|e| {
+                gamedock_core::Error::Plugin(format!("Failed to load library: {}", e))
+            })?;
 
             type MetadataFn = unsafe extern "C" fn() -> PluginMetadata;
 
@@ -139,7 +152,9 @@ impl PluginLoader {
                 let metadata = meta_fn();
                 tracing::info!(
                     "Loaded native plugin '{}' v{} from {:?}",
-                    metadata.name, metadata.version, path
+                    metadata.name,
+                    metadata.version,
+                    path
                 );
             } else {
                 tracing::info!("Loaded native plugin library from {:?}", path);

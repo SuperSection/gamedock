@@ -1,9 +1,9 @@
 pub mod apk;
-pub mod xapk;
-pub mod apks;
 pub mod apkm;
-pub mod installer;
+pub mod apks;
 pub mod download;
+pub mod installer;
+pub mod xapk;
 
-pub use installer::PackageInstaller;
 pub use download::Downloader;
+pub use installer::PackageInstaller;

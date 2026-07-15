@@ -1,8 +1,8 @@
-use crate::cli::{ControllerArgs, ControllerAction};
-use gamedock_core::AppConfig;
-use gamedock_controller::ControllerManager;
-use gamedock_core::EventBus;
+use crate::cli::{ControllerAction, ControllerArgs};
 use console::style;
+use gamedock_controller::ControllerManager;
+use gamedock_core::AppConfig;
+use gamedock_core::EventBus;
 
 pub async fn controller(args: ControllerArgs) -> anyhow::Result<()> {
     let config = AppConfig::load()?;
@@ -34,9 +34,17 @@ pub async fn controller(args: ControllerArgs) -> anyhow::Result<()> {
                 println!("{} - {}", style(&p.name).bold(), p.description);
             }
         }
-        ControllerAction::SetProfile { controller_id, profile_name } => {
+        ControllerAction::SetProfile {
+            controller_id,
+            profile_name,
+        } => {
             manager.set_profile(&controller_id, &profile_name).await?;
-            println!("{} profile '{}' set for '{}'", style("✓").green(), profile_name, controller_id);
+            println!(
+                "{} profile '{}' set for '{}'",
+                style("✓").green(),
+                profile_name,
+                controller_id
+            );
         }
     }
 

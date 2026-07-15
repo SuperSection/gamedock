@@ -1,5 +1,5 @@
 use crate::state::{AppState, Tab};
-use egui::{self, Color32, RichText, Align, Layout};
+use egui::{self, Align, Color32, Layout, RichText};
 
 pub struct GameDockApp {
     state: AppState,
@@ -39,7 +39,9 @@ impl GameDockApp {
                         let (color, text) = match status {
                             gamedock_core::RuntimeStatus::Running => (Color32::GREEN, "Running"),
                             gamedock_core::RuntimeStatus::Installed => (Color32::YELLOW, "Ready"),
-                            gamedock_core::RuntimeStatus::NotInstalled => (Color32::RED, "Not Installed"),
+                            gamedock_core::RuntimeStatus::NotInstalled => {
+                                (Color32::RED, "Not Installed")
+                            }
                             _ => (Color32::GRAY, "Unknown"),
                         };
                         ui.label(RichText::new(text).color(color));
@@ -48,9 +50,11 @@ impl GameDockApp {
                     ui.separator();
 
                     let search = &mut self.state.search_query;
-                    ui.add(egui::TextEdit::singleline(search)
-                        .hint_text("Search games...")
-                        .desired_width(200.0));
+                    ui.add(
+                        egui::TextEdit::singleline(search)
+                            .hint_text("Search games...")
+                            .desired_width(200.0),
+                    );
                 });
             });
         });
@@ -84,11 +88,17 @@ impl GameDockApp {
                 ui.heading(RichText::new("Tools").size(16.0));
                 ui.add_space(4.0);
 
-                if ui.selectable_label(self.state.active_tab == Tab::Controllers, "Controllers").clicked() {
+                if ui
+                    .selectable_label(self.state.active_tab == Tab::Controllers, "Controllers")
+                    .clicked()
+                {
                     self.state.active_tab = Tab::Controllers;
                 }
 
-                if ui.selectable_label(self.state.active_tab == Tab::Settings, "Settings").clicked() {
+                if ui
+                    .selectable_label(self.state.active_tab == Tab::Settings, "Settings")
+                    .clicked()
+                {
                     self.state.active_tab = Tab::Settings;
                 }
 
@@ -106,15 +116,15 @@ impl GameDockApp {
         let runtime_manager = match &self.state.runtime_manager {
             Some(rm) => rm.clone(),
             None => {
-                self.state.set_notification("Runtime not initialized".into());
+                self.state
+                    .set_notification("Runtime not initialized".into());
                 return;
             }
         };
 
         if !config.play_store.enabled {
-            self.state.set_notification(
-                "Play Store is disabled. Enable it in Settings.".into()
-            );
+            self.state
+                .set_notification("Play Store is disabled. Enable it in Settings.".into());
             return;
         }
 
@@ -122,14 +132,14 @@ impl GameDockApp {
         let manager = runtime_manager.clone();
         let runtime_name = config.default_runtime.clone();
         let result = tokio::task::block_in_place(|| {
-            rt.block_on(async {
-                manager.launch_play_store(&runtime_name).await
-            })
+            rt.block_on(async { manager.launch_play_store(&runtime_name).await })
         });
 
         match result {
             Ok(()) => self.state.set_notification("Opening Play Store...".into()),
-            Err(e) => self.state.set_notification(format!("Failed to open Play Store: {}", e)),
+            Err(e) => self
+                .state
+                .set_notification(format!("Failed to open Play Store: {}", e)),
         }
     }
 
@@ -164,17 +174,35 @@ impl GameDockApp {
         ui.heading("Game Library");
         ui.separator();
 
-        let apps: Vec<(String, String, String, bool, bool, gamedock_core::AppStatus)> = self.state.filtered_apps()
+        let apps: Vec<(String, String, String, bool, bool, gamedock_core::AppStatus)> = self
+            .state
+            .filtered_apps()
             .into_iter()
-            .map(|a| (a.id.clone(), a.name.clone(), a.package_name.clone(), a.is_favorite, a.is_installed(), a.status.clone()))
+            .map(|a| {
+                (
+                    a.id.clone(),
+                    a.name.clone(),
+                    a.package_name.clone(),
+                    a.is_favorite,
+                    a.is_installed(),
+                    a.status.clone(),
+                )
+            })
             .collect();
 
         if apps.is_empty() {
             ui.vertical_centered(|ui| {
                 ui.add_space(100.0);
-                ui.label(RichText::new("No games in library").size(20.0).color(Color32::GRAY));
+                ui.label(
+                    RichText::new("No games in library")
+                        .size(20.0)
+                        .color(Color32::GRAY),
+                );
                 ui.add_space(8.0);
-                ui.label(RichText::new("Install games from APK files or the Play Store").color(Color32::GRAY));
+                ui.label(
+                    RichText::new("Install games from APK files or the Play Store")
+                        .color(Color32::GRAY),
+                );
             });
             return;
         }
@@ -182,7 +210,8 @@ impl GameDockApp {
         egui::ScrollArea::vertical().show(ui, |ui| {
             let mut selected_idx = None;
 
-            for (idx, (id, name, pkg_name, is_fav, is_installed, status)) in apps.iter().enumerate() {
+            for (idx, (id, name, pkg_name, is_fav, is_installed, status)) in apps.iter().enumerate()
+            {
                 let is_selected = Some(idx) == self.state.selected_app;
                 let bg = if is_selected {
                     Color32::from_rgba_premultiplied(50, 50, 80, 255)
@@ -197,33 +226,39 @@ impl GameDockApp {
 
                 let name_c = name.clone();
                 let id_c = id.clone();
-                let response = ui.push_id(id, |ui| {
-                    frame.show(ui, |ui| {
-                        ui.horizontal(|ui| {
-                            let status_icon = match status {
-                                gamedock_core::AppStatus::Installed => RichText::new("OK").color(Color32::GREEN),
-                                _ => RichText::new("--").color(Color32::GRAY),
-                            };
-                            ui.label(status_icon);
-                            ui.vertical(|ui| {
-                                ui.label(RichText::new(name).strong().size(16.0));
-                                ui.label(RichText::new(pkg_name).small().color(Color32::GRAY));
-                            });
-
-                            ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                                if *is_fav {
-                                    ui.label(RichText::new("*").color(Color32::YELLOW).size(20.0));
-                                }
-
-                                if *is_installed {
-                                    if ui.small_button("Play").clicked() {
-                                        self.launch_app_by_id(&id_c, &name_c);
+                let response = ui
+                    .push_id(id, |ui| {
+                        frame.show(ui, |ui| {
+                            ui.horizontal(|ui| {
+                                let status_icon = match status {
+                                    gamedock_core::AppStatus::Installed => {
+                                        RichText::new("OK").color(Color32::GREEN)
                                     }
-                                }
+                                    _ => RichText::new("--").color(Color32::GRAY),
+                                };
+                                ui.label(status_icon);
+                                ui.vertical(|ui| {
+                                    ui.label(RichText::new(name).strong().size(16.0));
+                                    ui.label(RichText::new(pkg_name).small().color(Color32::GRAY));
+                                });
+
+                                ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                                    if *is_fav {
+                                        ui.label(
+                                            RichText::new("*").color(Color32::YELLOW).size(20.0),
+                                        );
+                                    }
+
+                                    if *is_installed {
+                                        if ui.small_button("Play").clicked() {
+                                            self.launch_app_by_id(&id_c, &name_c);
+                                        }
+                                    }
+                                });
                             });
                         });
-                    });
-                }).response;
+                    })
+                    .response;
 
                 if response.interact(egui::Sense::click()).clicked() {
                     selected_idx = Some(idx);
@@ -242,7 +277,9 @@ impl GameDockApp {
         ui.heading("Installed Games");
         ui.separator();
 
-        let installed: Vec<(String, String, String)> = self.state.filtered_apps()
+        let installed: Vec<(String, String, String)> = self
+            .state
+            .filtered_apps()
             .into_iter()
             .filter(|a| a.is_installed())
             .map(|a| (a.id.clone(), a.name.clone(), a.version_name.clone()))
@@ -251,7 +288,11 @@ impl GameDockApp {
         if installed.is_empty() {
             ui.vertical_centered(|ui| {
                 ui.add_space(100.0);
-                ui.label(RichText::new("No installed games").size(20.0).color(Color32::GRAY));
+                ui.label(
+                    RichText::new("No installed games")
+                        .size(20.0)
+                        .color(Color32::GRAY),
+                );
             });
             return;
         }
@@ -278,7 +319,9 @@ impl GameDockApp {
     fn render_favorites_tab(&mut self, ui: &mut egui::Ui) {
         ui.heading("Favorites");
         ui.separator();
-        let favorites: Vec<(String, String)> = self.state.filtered_apps()
+        let favorites: Vec<(String, String)> = self
+            .state
+            .filtered_apps()
             .into_iter()
             .filter(|a| a.is_favorite)
             .map(|a| (a.id.clone(), a.name.clone()))
@@ -287,7 +330,11 @@ impl GameDockApp {
         if favorites.is_empty() {
             ui.vertical_centered(|ui| {
                 ui.add_space(100.0);
-                ui.label(RichText::new("No favorite games").size(20.0).color(Color32::GRAY));
+                ui.label(
+                    RichText::new("No favorite games")
+                        .size(20.0)
+                        .color(Color32::GRAY),
+                );
             });
             return;
         }
@@ -311,7 +358,9 @@ impl GameDockApp {
     fn render_recent_tab(&mut self, ui: &mut egui::Ui) {
         ui.heading("Recently Played");
         ui.separator();
-        let mut recent: Vec<(String, String, Option<chrono::DateTime<chrono::Utc>>)> = self.state.filtered_apps()
+        let mut recent: Vec<(String, String, Option<chrono::DateTime<chrono::Utc>>)> = self
+            .state
+            .filtered_apps()
             .into_iter()
             .filter(|a| a.last_played.is_some())
             .map(|a| (a.id.clone(), a.name.clone(), a.last_played))
@@ -322,7 +371,11 @@ impl GameDockApp {
         if recent.is_empty() {
             ui.vertical_centered(|ui| {
                 ui.add_space(100.0);
-                ui.label(RichText::new("No recently played games").size(20.0).color(Color32::GRAY));
+                ui.label(
+                    RichText::new("No recently played games")
+                        .size(20.0)
+                        .color(Color32::GRAY),
+                );
             });
             return;
         }
@@ -332,7 +385,11 @@ impl GameDockApp {
                 ui.label(RichText::new(">").color(Color32::LIGHT_BLUE));
                 ui.label(RichText::new(name).strong());
                 if let Some(ref last_played) = last {
-                    ui.label(RichText::new(last_played.format("%Y-%m-%d %H:%M").to_string()).small().color(Color32::GRAY));
+                    ui.label(
+                        RichText::new(last_played.format("%Y-%m-%d %H:%M").to_string())
+                            .small()
+                            .color(Color32::GRAY),
+                    );
                 }
                 let id_c = id.clone();
                 let n = name.clone();
@@ -369,12 +426,19 @@ impl GameDockApp {
                 rt.block_on(async { ctrl_mgr.list_controllers().await })
             });
             if controllers.is_empty() {
-                ui.label(RichText::new("No controllers detected. Connect a controller and click Scan.").color(Color32::GRAY));
+                ui.label(
+                    RichText::new("No controllers detected. Connect a controller and click Scan.")
+                        .color(Color32::GRAY),
+                );
             } else {
                 for ctrl in &controllers {
                     ui.horizontal(|ui| {
                         ui.label(RichText::new(ctrl.display_name()).strong());
-                        ui.label(RichText::new(ctrl.device_path().display().to_string()).small().color(Color32::GRAY));
+                        ui.label(
+                            RichText::new(ctrl.device_path().display().to_string())
+                                .small()
+                                .color(Color32::GRAY),
+                        );
                     });
                 }
             }
@@ -390,7 +454,8 @@ impl GameDockApp {
                 let _ = tokio::task::block_in_place(|| {
                     rt.block_on(async { ctrl_mgr.scan_controllers().await })
                 });
-                self.state.set_notification("Controller scan complete".into());
+                self.state
+                    .set_notification("Controller scan complete".into());
             }
         }
 
@@ -399,11 +464,17 @@ impl GameDockApp {
         ui.add_space(4.0);
 
         let mut selected_profile = 0usize;
-        let profiles = ["Default", "FPS Profile", "Racing Profile", "Platformer Profile"];
+        let profiles = [
+            "Default",
+            "FPS Profile",
+            "Racing Profile",
+            "Platformer Profile",
+        ];
         for (i, profile) in profiles.iter().enumerate() {
             ui.horizontal(|ui| {
                 if ui.radio_value(&mut selected_profile, i, *profile).clicked() {
-                    self.state.set_notification(format!("Selected profile: {}", profile));
+                    self.state
+                        .set_notification(format!("Selected profile: {}", profile));
                 }
             });
         }
@@ -416,7 +487,8 @@ impl GameDockApp {
                 let _ = tokio::task::block_in_place(|| {
                     rt.block_on(async { ctrl_mgr.create_default_profiles().await })
                 });
-                self.state.set_notification("Default profiles created!".into());
+                self.state
+                    .set_notification("Default profiles created!".into());
             }
         }
     }
@@ -459,7 +531,10 @@ impl GameDockApp {
         ui.heading(RichText::new("Google Play Store").size(14.0));
         {
             let mut play_store = self.state.config.play_store.enabled;
-            if ui.checkbox(&mut play_store, "Enable Play Store support").changed() {
+            if ui
+                .checkbox(&mut play_store, "Enable Play Store support")
+                .changed()
+            {
                 self.state.config.play_store.enabled = play_store;
                 let _ = self.state.config.save();
             }
@@ -485,7 +560,8 @@ impl GameDockApp {
         if ui.button("Reset to Defaults").clicked() {
             self.state.config = gamedock_core::AppConfig::default();
             let _ = self.state.config.save();
-            self.state.set_notification("Settings reset to defaults".into());
+            self.state
+                .set_notification("Settings reset to defaults".into());
         }
     }
 
@@ -494,7 +570,11 @@ impl GameDockApp {
         ui.vertical_centered(|ui| {
             ui.heading(RichText::new("Welcome to GameDock").size(28.0).strong());
             ui.add_space(8.0);
-            ui.label(RichText::new("Android gaming on Linux, made seamless").size(16.0).color(Color32::GRAY));
+            ui.label(
+                RichText::new("Android gaming on Linux, made seamless")
+                    .size(16.0)
+                    .color(Color32::GRAY),
+            );
             ui.add_space(32.0);
 
             ui.heading(RichText::new("Step 1: Install Waydroid").size(18.0));
@@ -519,8 +599,17 @@ impl GameDockApp {
             if self.state.installing_waydroid {
                 ui.spinner();
                 ui.add_space(8.0);
-                ui.label(RichText::new("Installing... This may take a few minutes.").color(Color32::LIGHT_BLUE));
-                ui.label(RichText::new("A ~1GB Android system image will be downloaded on first launch.").small().color(Color32::GRAY));
+                ui.label(
+                    RichText::new("Installing... This may take a few minutes.")
+                        .color(Color32::LIGHT_BLUE),
+                );
+                ui.label(
+                    RichText::new(
+                        "A ~1GB Android system image will be downloaded on first launch.",
+                    )
+                    .small()
+                    .color(Color32::GRAY),
+                );
             } else {
                 let btn_label = if self.state.setup_gapps {
                     "Install with Play Store"
@@ -554,7 +643,9 @@ impl GameDockApp {
                             self.state.first_run = false;
                             self.state.installing_waydroid = false;
                             self.state.active_tab = Tab::Library;
-                            self.state.set_notification("Setup complete! You can now install games.".into());
+                            self.state.set_notification(
+                                "Setup complete! You can now install games.".into(),
+                            );
                         }
                         Err(e) => {
                             self.state.installing_waydroid = false;
@@ -564,7 +655,11 @@ impl GameDockApp {
                 }
 
                 ui.add_space(8.0);
-                ui.label(RichText::new("You can change this later in Settings.").small().color(Color32::GRAY));
+                ui.label(
+                    RichText::new("You can change this later in Settings.")
+                        .small()
+                        .color(Color32::GRAY),
+                );
             }
         });
     }
@@ -583,7 +678,8 @@ impl GameDockApp {
                 ui.add_space(8.0);
 
                 if ui.button("Browse APK/XAPK...").clicked() {
-                    self.state.set_notification("File dialog would open here".into());
+                    self.state
+                        .set_notification("File dialog would open here".into());
                     self.state.show_install_dialog = false;
                 }
 
@@ -602,14 +698,16 @@ impl GameDockApp {
         let runtime_manager = match &self.state.runtime_manager {
             Some(rm) => rm.clone(),
             None => {
-                self.state.set_notification("Runtime not initialized".into());
+                self.state
+                    .set_notification("Runtime not initialized".into());
                 return;
             }
         };
         let library = match &self.state.library {
             Some(lib) => lib.clone(),
             None => {
-                self.state.set_notification("Library not initialized".into());
+                self.state
+                    .set_notification("Library not initialized".into());
                 return;
             }
         };
@@ -622,23 +720,33 @@ impl GameDockApp {
         let result = tokio::task::block_in_place(|| {
             rt.block_on(async {
                 let launcher = gamedock_launcher::AppLauncher::new(
-                    config, runtime_manager, library, event_bus,
+                    config,
+                    runtime_manager,
+                    library,
+                    event_bus,
                 );
-                launcher.launch_with_optimization(
-                    &app_id_owned,
-                    self.state.config.optimizer.gamemode,
-                    self.state.config.optimizer.mangohud,
-                ).await
+                launcher
+                    .launch_with_optimization(
+                        &app_id_owned,
+                        self.state.config.optimizer.gamemode,
+                        self.state.config.optimizer.mangohud,
+                    )
+                    .await
             })
         });
 
         match result {
-            Ok(()) => self.state.set_notification(format!("Launching {}...", app_name_owned)),
-            Err(e) => self.state.set_notification(format!("Failed to launch: {}", e)),
+            Ok(()) => self
+                .state
+                .set_notification(format!("Launching {}...", app_name_owned)),
+            Err(e) => self
+                .state
+                .set_notification(format!("Failed to launch: {}", e)),
         }
     }
 
     fn backup_app(&mut self, app_name: &str) {
-        self.state.set_notification(format!("Backing up {}...", app_name));
+        self.state
+            .set_notification(format!("Backing up {}...", app_name));
     }
 }
